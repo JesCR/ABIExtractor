@@ -1,0 +1,205 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.70.0-nightly",
+            "commitHash": "f63ccaf25f74151a5d8ce057904cd944074b01d2",
+            "commitDate": "2023-03-06",
+            "channel": "Nightly",
+            "short": "rustc 1.70.0-nightly (f63ccaf25 2023-03-06)"
+        },
+        "contractCrate": {
+            "name": "onedex-sft-boost-staking",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.39.5"
+        }
+    },
+    "name": "OnedexSftBoostStaking",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "setConfig",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "one_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "sft_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "sft_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "stake_min_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "apr",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getSftId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getAPR",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "getTotalStaking",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getDepositedRewards",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getMinStakeAmount",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getUserList",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getCurrentUserRewardAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getUserStakingInfo",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "UserStaking"
+                }
+            ]
+        },
+        {
+            "name": "deposit",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "stake",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "unstake",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "opt_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "claim",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "UserStaking": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "user_staking_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "user_reward_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_staking_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "reward_deposit_amount",
+                    "type": "BigUint"
+                }
+            ]
+        }
+    }
+}

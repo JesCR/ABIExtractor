@@ -1,0 +1,746 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.72.0-nightly",
+            "commitHash": "43062c43d2a63cf4e261c6eddc417575c4f3062f",
+            "commitDate": "2023-06-09",
+            "channel": "Nightly",
+            "short": "rustc 1.72.0-nightly (43062c43d 2023-06-09)"
+        },
+        "contractCrate": {
+            "name": "nft-staking-sc",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.42.0"
+        }
+    },
+    "name": "NftStakingSc",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "creation_cost",
+                "type": "BigUint"
+            },
+            {
+                "name": "treasury_address",
+                "type": "Address"
+            },
+            {
+                "name": "burner_address",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "setCreationCost",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "creation_cost",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setTreasuryAddress",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "treasury_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "burner_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setPaused",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "paused",
+                    "type": "bool"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setPoolPaused",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "paused",
+                    "type": "bool"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Treasury Address\\\\\\\n     *  Address which Service fee will be transferred\\\\\\\n     \""
+            ],
+            "name": "getTreasuryAddreess",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Burner Address\\\\\\\n     *  Address which One token will be transferred to be burnt\\\\\\\n     \""
+            ],
+            "name": "getBurnerAddreess",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Creating Pool Cost\\\\\\\n     *  Egld Amount\\\\\\\n     \""
+            ],
+            "name": "getPoolCreationCost",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Paused\\\\\\\n     *  \"true\": not allowed to operate against sc\\\\\\\n     *  \"false\": allowed\\\\\\\n     \""
+            ],
+            "name": "getPaused",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool Ids\\\\\\\n     *  stake_token, reward_token -> pool_id\\\\\\\n     \""
+            ],
+            "name": "getPoolIds",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<multi<TokenIdentifier,u32>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Last Pool Id\\\\\\\n     \""
+            ],
+            "name": "getLastPoolId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool Owner\\\\\\\n     *  pool_id -> owner address\\\\\\\n     \""
+            ],
+            "name": "getPoolOwner",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool state\\\\\\\n     *  pool_id -> pause/unpause\\\\\\\n     \""
+            ],
+            "name": "getPoolte",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool stake nft token id\\\\\\\n     *  pool_id -> stake_nft_token_id\\\\\\\n     \""
+            ],
+            "name": "getPoolStakeNftTokenId",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool reward token id\\\\\\\n     * pool_id -> pool_reward_token_id\\\\\\\n     \""
+            ],
+            "name": "getPoolRewardTokenId",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool reward token decimal\\\\\\\n     * pool_id -> pool_reward_token_decimal\\\\\\\n     \""
+            ],
+            "name": "getPoolRewardTokenDecimal",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool reward infos\\\\\\\n     *  pool_id -> pool_daily_reward_amount/timestamp\\\\\\\n     \""
+            ],
+            "name": "getPoolRewardInfos",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<RewardInfo>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool user total staked nft amount\\\\\\\n     \""
+            ],
+            "name": "getPoolUserTotalStakeAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool user stake nonces\\\\\\\n     \""
+            ],
+            "name": "getPoolUserStakedNftNonces",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<u64>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool user stake amount per nonce\\\\\\\n     \""
+            ],
+            "name": "getPoolUserStakedAmountPerNonce",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool user last update timestamp\\\\\\\n     \""
+            ],
+            "name": "getPoolUserLastUpdateTimestamp",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool user reward amount\\\\\\\n     \""
+            ],
+            "name": "getPoolUserRewardAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool total stake amount\\\\\\\n     \""
+            ],
+            "name": "getPoolTotalStakeAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool reward deposit amount\\\\\\\n     \""
+            ],
+            "name": "getPoolRewardDepositAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool user count\\\\\\\n     \""
+            ],
+            "name": "getPoolUsers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Create Pool\\\\\\\n     \""
+            ],
+            "name": "createPool",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "pool_stake_nft_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "pool_reward_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "pool_reward_token_decimal",
+                    "type": "u32"
+                },
+                {
+                    "name": "pool_daily_reward_amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "changeDailyRewardAmount",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "pool_daily_reward_amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * Pool Reward Deposit\\\\\\\n     \""
+            ],
+            "name": "depositReward",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "withdrawReward",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "opt_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * User Stake\\\\\\\n     \""
+            ],
+            "name": "userStake",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "\"\\\\\\\n     * User Unstake\\\\\\\n     \""
+            ],
+            "name": "userUnstake",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "unstake_args",
+                    "type": "variadic<multi<TokenIdentifier,u64,BigUint>>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "userClaim",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getPoolUserCurrentRewardAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "viewPools",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "opt_user_address",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<Pool>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "viewPool",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "opt_user_address",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Pool"
+                }
+            ]
+        },
+        {
+            "name": "viewUserPoolStakeNfts",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<StakedNft>",
+                    "multi_result": true
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "Pool": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "owner",
+                    "type": "Address"
+                },
+                {
+                    "name": "paused",
+                    "type": "bool"
+                },
+                {
+                    "name": "pool_paused",
+                    "type": "bool"
+                },
+                {
+                    "name": "stake_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "reward_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "reward_token_decimal",
+                    "type": "u32"
+                },
+                {
+                    "name": "pool_daily_reward_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_stake_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "reward_pool_size",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "staker_count",
+                    "type": "u32"
+                },
+                {
+                    "name": "user_total_stake_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "user_reward_amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "RewardInfo": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "pool_daily_reward_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "u64"
+                }
+            ]
+        },
+        "StakedNft": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "stake_nft_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "stake_nft_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "stake_nft_amount",
+                    "type": "BigUint"
+                }
+            ]
+        }
+    }
+}

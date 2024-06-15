@@ -1,0 +1,2247 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.70.0-nightly",
+            "commitHash": "5e1d3299a290026b85787bc9c7e72bcc53ac283f",
+            "commitDate": "2023-03-31",
+            "channel": "Nightly",
+            "short": "rustc 1.70.0-nightly (5e1d3299a 2023-03-31)"
+        },
+        "contractCrate": {
+            "name": "money-market",
+            "version": "0.0.0",
+            "gitVersion": "rv-audit-2-111-g8c5cd08"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.39.8"
+        }
+    },
+    "name": "MoneyMarket",
+    "constructor": {
+        "docs": [
+            "Initialize the Money Market.",
+            "",
+            "# Arguments:",
+            "",
+            "- `underlying_id` - The underlying token identifier.",
+            "- `controller` - The address of the Controller.",
+            "- `interest_rate_model` - The address of the Interest Rate Model.",
+            "- `initial_exchange_rate` - The initial exchange rate in wad.",
+            "- `opt_admin` - An optional admin address for the contract.",
+            "",
+            "Notes:",
+            "",
+            "- If the contract is being deployed for the first time, the admin address will be set.",
+            "- If the admin address is not provided, the admin will be set as the deployer.",
+            "- If the contract is being upgraded, the admin address will not be overwritten.",
+            "- Upgrades won't change the underlying token identifier, initial exchange rate, accrual timestamp or the admin.",
+            ""
+        ],
+        "inputs": [
+            {
+                "name": "underlying_id",
+                "type": "EgldOrEsdtTokenIdentifier"
+            },
+            {
+                "name": "controller",
+                "type": "Address"
+            },
+            {
+                "name": "interest_rate_model",
+                "type": "Address"
+            },
+            {
+                "name": "initial_exchange_rate",
+                "type": "BigUint"
+            },
+            {
+                "name": "opt_admin",
+                "type": "optional<Address>",
+                "multi_arg": true
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "docs": [
+                "Issue the ESDT Hatom Token.",
+                "",
+                "# Arguments:",
+                "",
+                "- `name` - The token display name for the Hatom token.",
+                "- `ticker` - The token ticker for the Hatom token.",
+                "- `decimals` - The decimal precision for the Hatom token.",
+                ""
+            ],
+            "name": "issueEsdtToken",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "ticker",
+                    "type": "bytes"
+                },
+                {
+                    "name": "decimals",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets minting and burning roles for the Money Market smart contract with respect to the Hatom Token.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                ""
+            ],
+            "name": "setMarketRoles",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets minting and burning roles for the Controller smart contract with respect to the Hatom Token.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                ""
+            ],
+            "name": "setControllerRoles",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Mint at least the initial supply of Hatom tokens. These tokens will be burned to make sure that the total supply",
+                "never returns to zero. This is particularly useful because it enforces that the exchange rate will never returns to",
+                "its initial condition.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                "- Can only be called once.",
+                "- The initial supply is equal to the minimum initial supply.",
+                "- The remainder tokens are sent back to the caller.",
+                ""
+            ],
+            "name": "mintInitialSupply",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Returns the current admin address.",
+                ""
+            ],
+            "name": "getAdmin",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the current pending admin address, if there is one.",
+                ""
+            ],
+            "name": "getPendingAdmin",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Sets the pending admin address to the given address.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_pending_admin` - The new pending admin address.",
+                ""
+            ],
+            "name": "setPendingAdmin",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pending_admin",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Attempts to accept the pending admin, which must be set first using the `set_pending_admin` endpoint."
+            ],
+            "name": "acceptAdmin",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "A borrower requests underlying from the money market.",
+                "",
+                "# Arguments:",
+                "",
+                "- `underlying_amount` - The amount of underlying asset the borrower requests.",
+                ""
+            ],
+            "name": "borrow",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "underlying_amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EgldOrEsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "A utility function to highlight that this smart contract is a Money Market.",
+                ""
+            ],
+            "name": "isMoneyMarket",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Checks whether the Hatom token has been already issued.",
+                ""
+            ],
+            "name": "isTokenIssued",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "This method is one of the most important methods of the protocol, as it accrues the borrows interest and distributes",
+                "that amount into reserves (including revenue and staking rewards). In order to do that, it solves the money market",
+                "dynamics using an Euler scheme.",
+                ""
+            ],
+            "name": "accrueInterest",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Accrues interest if a sufficient amount of time has elapsed since the last accrual.",
+                ""
+            ],
+            "name": "tryAccrueInterest",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Adds an specified amount of underlying coming as a payment to the money market reserves.",
+                "",
+                "Notes:",
+                "",
+                "- The underlying amount is added as protocol revenue.",
+                "- Must be paid with underlying.",
+                "- Does not change the exchange rate.",
+                ""
+            ],
+            "name": "addReserves",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Translates an underlying amount to tokens.",
+                "",
+                "# Arguments:",
+                "",
+                "- `underlying_amount` - the amount of underlying to be converted to tokens.",
+                ""
+            ],
+            "name": "underlyingAmountToTokens",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "underlying_amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Translates tokens to an underlying amount.",
+                "",
+                "# Arguments:",
+                "",
+                "- `tokens` - the amount of tokens to be converted to underlying.",
+                ""
+            ],
+            "name": "tokensToUnderlyingAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "tokens",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Translates an underlying amount to tokens using an updated exchange rate.",
+                "",
+                "# Arguments:",
+                "",
+                "- `underlying_amount` - the amount of underlying to be converted to tokens.",
+                ""
+            ],
+            "name": "currentUnderlyingAmountToTokens",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "underlying_amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Translates tokens to an underlying amount using an updated exchange rate.",
+                "",
+                "# Arguments:",
+                "",
+                "- `tokens` - the amount of tokens to be converted to underlying.",
+                ""
+            ],
+            "name": "currentTokensToUnderlyingAmount",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "tokens",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the money market identifiers, i.e. the underlying identifier and the token identifier as a tuple.",
+                ""
+            ],
+            "name": "getMoneyMarketIdentifiers",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "tuple<EgldOrEsdtTokenIdentifier,TokenIdentifier>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the available cash.",
+                ""
+            ],
+            "name": "getCash",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated amount of borrows.",
+                ""
+            ],
+            "name": "getCurrentTotalBorrows",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the amount of borrows up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getTotalBorrows",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the discounted total borrows to the money market inception. This can be used as a base to calculate amounts",
+                "that depend on the borrows amounts, such as user rewards or discounts. Notice that it does not accrue interest.",
+                ""
+            ],
+            "name": "getBaseTotalBorrows",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated amount of reserves.",
+                ""
+            ],
+            "name": "getCurrentTotalReserves",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the amount of protocol reserves up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getTotalReserves",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated amount of staking rewards.",
+                ""
+            ],
+            "name": "getCurrentStakingRewards",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the amount of staking rewards up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getStakingRewards",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated amount of historical staking rewards.",
+                ""
+            ],
+            "name": "getCurrentHistoricalStakingRewards",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the amount of historical staking rewards up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getHistoricalStakingRewards",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated amount of revenue.",
+                ""
+            ],
+            "name": "getCurrentRevenue",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the amount of protocol revenue up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getRevenue",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated amount of liquidity. The liquidity is the cash plus the borrows minus the reserves.",
+                ""
+            ],
+            "name": "getCurrentLiquidity",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the amount of liquidity up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getLiquidity",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the reserve factor, i.e. the percentage of interest that is redirected to the reserves.",
+                ""
+            ],
+            "name": "getReserveFactor",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the stake factor, i.e. the percentage of reserves that is redirected to the staking contract.",
+                ""
+            ],
+            "name": "getStakeFactor",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the address of the Interest Rate Model smart contract if set.",
+                ""
+            ],
+            "name": "getInterestRateModel",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the address of the Controller smart contract if set.",
+                ""
+            ],
+            "name": "getController",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the address of the Staking smart contract if set.",
+                ""
+            ],
+            "name": "getStakingContract",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the updated borrow amount of the given account.",
+                ""
+            ],
+            "name": "getCurrentAccountBorrowAmount",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the borrow amount of the given account up to the last interaction that accrued interest or up to the current",
+                "time if a sufficient amount of time has elapsed since the last accrual.",
+                ""
+            ],
+            "name": "getReliableAccountBorrowAmount",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the borrow amount of the given account up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getStoredAccountBorrowAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the discounted account borrows to the money market inception. This can be used to calculate amounts that",
+                "depend on the borrows amounts, such as user rewards or discounts. Notice that it does not accrue interest.",
+                ""
+            ],
+            "name": "getBaseAccountBorrowAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the money market exchange rate and the borrow amount of the given account up to the last interaction that",
+                "accrued interest, in one shot.",
+                "",
+                "# Arguments:",
+                "",
+                "- `account` - The account address to check.",
+                ""
+            ],
+            "name": "getAccountSnapshot",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "tuple<BigUint,BigUint>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the money market exchange rate and the borrow amount of the given account up to the last interaction that",
+                "accrued interest or up to the current time if a sufficient amount of time has elapsed since the last accrual, in one",
+                "shot.",
+                "",
+                "# Arguments:",
+                "",
+                "- `account` - The account address to check.",
+                ""
+            ],
+            "name": "getReliableAccountSnapshot",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "tuple<BigUint,BigUint>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the borrow index of the money market up to the last interaction that accrued interest or its initial",
+                "condition. Notice that the borrow index is a mechanism that allows updating all account borrows without having to",
+                "loop into each account when there is an interaction with the protocol that accrues interests.",
+                ""
+            ],
+            "name": "getBorrowIndex",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the money market initial exchange rate.",
+                "",
+                "# Notes:",
+                "",
+                "- There is no need for a default value as it was initialized at money market construction.",
+                ""
+            ],
+            "name": "getInitialExchangeRate",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the current total supply of Hatom tokens, i.e. the amount of H-Tokens in circulation.",
+                ""
+            ],
+            "name": "getTotalSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Initialized at money market construction, no need for default.",
+                "Returns the timestamp for the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getAccrualTimestamp",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the current money market exchange rate between underlying and tokens.",
+                ""
+            ],
+            "name": "getCurrentExchangeRate",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the money market exchange rate between underlying and tokens up to the last interaction that accrued",
+                "interest.",
+                ""
+            ],
+            "name": "getStoredExchangeRate",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the borrow rate per second up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getBorrowRatePerSecond",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the supply rate per second up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getSupplyRatePerSecond",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the borrow rate and the supply rate per second up to the last interaction that accrued interest.",
+                ""
+            ],
+            "name": "getRatesPerSecond",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "tuple<BigUint,BigUint>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the close factor, used to determine the maximum amount of a borrow that can be repaid during a liquidation.",
+                ""
+            ],
+            "name": "getCloseFactor",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the current liquidation incentive. If liquidation incentive has not been configured yet, it returns one. This",
+                "assumption is correct given that the protocol seize share is zero by default. However, notice that the liquidation",
+                "incentive is configured at protocol deployment.",
+                ""
+            ],
+            "name": "getLiquidationIncentive",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the current protocol seize share. If it has has not been configured yet, it returns zero. This assumption is",
+                "correct given that the liquidation incentive is zero by default. However, notice that the protocol seize share is",
+                "configured at protocol deployment.",
+                ""
+            ],
+            "name": "getProtocolSeizeShare",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the accrual time threshold, used to determine when the accrued interest is too old.",
+                ""
+            ],
+            "name": "getAccrualTimeThreshold",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Sets the staking smart contract address.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_staking` - The Staking smart contract address.",
+                ""
+            ],
+            "name": "setStakingContract",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_staking",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new reserve factor.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_reserve_factor` - The new reserve factor in wad.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                "- The new reserve factor must not exceed the maximum allowed.",
+                ""
+            ],
+            "name": "setReserveFactor",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_reserve_factor",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new stake factor, i.e. the portion of the reserves that is used as staking rewards.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_stake_factor` - The new reserve factor in wad.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                "- The new stake factor must not exceed the maximum allowed.",
+                ""
+            ],
+            "name": "setStakeFactor",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_stake_factor",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new close factor used at liquidations.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_close_factor` - The new close factor in wad.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                ""
+            ],
+            "name": "setCloseFactor",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_close_factor",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new liquidation incentive for liquidations.",
+                "",
+                "# Arguments",
+                "",
+                "- `new_liquidation_incentive` - the new liquidation incentive in wad",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- the new liquidation incentive should not be less than the amount that would yield losses for liquidators",
+                "- the new liquidation incentive should be less than `1 / eff_ltv`, which is conservatively assumed to be `1 /",
+                "  max_ltv`. Otherwise, there won't be a Risky region.",
+                ""
+            ],
+            "name": "setLiquidationIncentive",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_liquidation_incentive",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new protocol seize share, i.e. the portion of the seized amount that is kept by the protocol.",
+                "",
+                "# Arguments",
+                "",
+                "- `new_protocol_seize_share` - the new protocol seize share in wad",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- the new protocol seize share cannot exceed the amount that would yield losses for liquidators",
+                ""
+            ],
+            "name": "setProtocolSeizeShare",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_protocol_seize_share",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new Interest Rate Model.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_interest_rate_model` - The address of the new Interest Rate Model smart contract.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                "- The provided address must be a valid Interest Rate Model smart contract.",
+                ""
+            ],
+            "name": "setInterestRateModel",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_interest_rate_model",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Withdraws an specified amount of underlying from the money market reserves (revenue part) to the admin account.",
+                "",
+                "# Arguments:",
+                "",
+                "- `underlying_amount` - The amount of underlying to withdraw.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                "- The underlying amount is directed to the admin account.",
+                ""
+            ],
+            "name": "reduceReserves",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "underlying_amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets a new accrual time threshold.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_accrual_time_threshold` - The new accrual time threshold in seconds.",
+                "",
+                "# Notes:",
+                "",
+                "- Can only be called by the admin.",
+                ""
+            ],
+            "name": "setAccrualTimeThreshold",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_accrual_time_threshold",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Whitelists a trusted minter contract, i.e. a contract that can mint and enter market in the name of someone else.",
+                "",
+                "# Arguments:",
+                "",
+                "- `trusted_minter` - the new trusted minter to whitelist",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- `trusted_minter` must be a trusted smart contract",
+                "- `trusted_minter` must not be already trusted",
+                ""
+            ],
+            "name": "addTrustedMinter",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "trusted_minter",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Removes a trusted minter contract address from the whitelist of trusted minters contracts.",
+                "",
+                "# Arguments:",
+                "",
+                "- `trusted_minter` - the trusted minter to remove",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- `trusted_minter` must has been already trusted",
+                ""
+            ],
+            "name": "removeTrustedMinter",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "trusted_minter",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Liquidate a risky borrower by taking her Hatom's tokens deposited as collateral at a specified money market",
+                "",
+                "# Arguments:",
+                "",
+                "- `borrower` - The account to be liquidated.",
+                "- `collateral_mma ` - The money market in which to seize collateral from the borrower.",
+                "- `opt_min_tokens` - The minimum amount of tokens to be seized from the borrower.",
+                ""
+            ],
+            "name": "liquidateBorrow",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "borrower",
+                    "type": "Address"
+                },
+                {
+                    "name": "collateral_mma",
+                    "type": "Address"
+                },
+                {
+                    "name": "opt_min_tokens",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EsdtTokenPayment"
+                },
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Supply underlying to the money market, providing liquidity and accruing interest in exchange. In exchange, minted",
+                "Hatom tokens are directed to the caller, which can be redeemed for underlying at a given point in the future.",
+                ""
+            ],
+            "name": "mint",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Mints Hatom's tokens and enters the market in a single transaction.",
+                "",
+                "# Arguments:",
+                "",
+                "- `opt_account` - If given, the collateral will be deposited on the name of this account. Can only be performed by a",
+                "  trusted minter.",
+                "",
+                "# Notes:",
+                "",
+                "- Must be paid with the underlying asset.",
+                ""
+            ],
+            "name": "mintAndEnterMarket",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "opt_account",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Exchanges caller paid Hatom's tokens back for her underlying asset.",
+                "",
+                "# Arguments:",
+                "",
+                "- `underlying_amount` - An optional amount of how much underlying wants to receive back given a sufficient amount of",
+                "  Hatom tokens are paid.",
+                ""
+            ],
+            "name": "redeem",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "underlying_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EgldOrEsdtTokenPayment"
+                },
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Repays an outstanding borrow to the money market.",
+                "",
+                "# Arguments:",
+                "",
+                "- `borrower` - An optional address to repay on behalf of this account.",
+                "",
+                "Notes:",
+                "",
+                "- The repayment amount can be higher than the outstanding borrow. In such case, the remainder is returned.",
+                ""
+            ],
+            "name": "repayBorrow",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "borrower",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EgldOrEsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Handler for `seize_internal` via smart contract to smart contract calls.",
+                "",
+                "# Arguments:",
+                "",
+                "- `liquidator` - The account retrieving the seized collateral.",
+                "- `borrower` - The account having collateral seized.",
+                "- `tokens_to_seize` - The tokens to seize.",
+                ""
+            ],
+            "name": "seize",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "liquidator",
+                    "type": "Address"
+                },
+                {
+                    "name": "borrower",
+                    "type": "Address"
+                },
+                {
+                    "name": "tokens_to_seize",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores the money market state."
+            ],
+            "name": "getState",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "State"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores the underlying identifier."
+            ],
+            "name": "getUnderlyingId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores the token identifier."
+            ],
+            "name": "getTokenId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores whether the token is being issued or not."
+            ],
+            "name": "getOngoingIssuance",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores whether the token initial supply has been minted or not."
+            ],
+            "name": "getMintedInitialSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores the borrow snapshot for a given borrower account."
+            ],
+            "name": "getAccountBorrowSnapshot",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "borrower",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "AccountSnapshot"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Claims staking rewards from the staking contract, and sends them to the caller's account.",
+                "",
+                "This function accrues interest then retrieves the amount of staking rewards and checks if there are any rewards to",
+                "claim. If there are rewards, it transfers them from the protocol's cash balance to the caller's account, updates the",
+                "reserve and staking rewards balance.",
+                ""
+            ],
+            "name": "claimStakingRewards",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        }
+    ],
+    "events": [
+        {
+            "docs": [
+                "Event emitted when the pending admin is updated."
+            ],
+            "identifier": "new_pending_admin_event",
+            "inputs": [
+                {
+                    "name": "pending_admin",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the admin is updated."
+            ],
+            "identifier": "new_admin_event",
+            "inputs": [
+                {
+                    "name": "admin",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the market state is updated."
+            ],
+            "identifier": "set_market_state_event",
+            "inputs": [
+                {
+                    "name": "old_state",
+                    "type": "State",
+                    "indexed": true
+                },
+                {
+                    "name": "new_state",
+                    "type": "State",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when tokens are minted."
+            ],
+            "identifier": "mint_event",
+            "inputs": [
+                {
+                    "name": "minter",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "tokens",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when tokens are redeemed."
+            ],
+            "identifier": "redeem_event",
+            "inputs": [
+                {
+                    "name": "redeemer",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "tokens",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when a user borrows underlying."
+            ],
+            "identifier": "borrow_event",
+            "inputs": [
+                {
+                    "name": "borrower",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_account_borrow",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_total_borrows",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_borrower_index",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when a borrower's position is liquidated."
+            ],
+            "identifier": "liquidate_borrow_event",
+            "inputs": [
+                {
+                    "name": "liquidator",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "borrower",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "collateral_mma",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "tokens",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when a borrower repays some borrowed underlying."
+            ],
+            "identifier": "repay_borrow_event",
+            "inputs": [
+                {
+                    "name": "payer",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "borrower",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_account_borrow",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_total_borrows",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when interest is accrued on the money market."
+            ],
+            "identifier": "accrue_interest_event",
+            "inputs": [
+                {
+                    "name": "prev_cash",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "accumulated_interest",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_borrow_index",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_total_borrows",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when market borrow and supply rates are updated."
+            ],
+            "identifier": "updated_rates_event",
+            "inputs": [
+                {
+                    "name": "borrow_rate",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "supply_rate",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the reserve factor is updated."
+            ],
+            "identifier": "new_reserve_factor_event",
+            "inputs": [
+                {
+                    "name": "old_reserve_factor",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_reserve_factor",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the stake factor is updated."
+            ],
+            "identifier": "new_stake_factor_event",
+            "inputs": [
+                {
+                    "name": "old_stake_factor",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_stake_factor",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the controller address is updated."
+            ],
+            "identifier": "new_controller_event",
+            "inputs": [
+                {
+                    "name": "old_address",
+                    "type": "Option<Address>",
+                    "indexed": true
+                },
+                {
+                    "name": "new_address",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the staking contract address is updated."
+            ],
+            "identifier": "new_staking_contract_event",
+            "inputs": [
+                {
+                    "name": "old_address",
+                    "type": "Option<Address>",
+                    "indexed": true
+                },
+                {
+                    "name": "new_address",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the interest rate model contract address is updated."
+            ],
+            "identifier": "new_interest_rate_model_event",
+            "inputs": [
+                {
+                    "name": "old_address",
+                    "type": "Option<Address>",
+                    "indexed": true
+                },
+                {
+                    "name": "new_address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "r0",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "m1",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "m2",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "uo",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "r_max",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when a the issuance of the token is started."
+            ],
+            "identifier": "issue_started_event",
+            "inputs": [
+                {
+                    "name": "caller",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "ticker",
+                    "type": "bytes",
+                    "indexed": true
+                },
+                {
+                    "name": "supply",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the issuance of the token succeeds."
+            ],
+            "identifier": "issue_success_event",
+            "inputs": [
+                {
+                    "name": "caller",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "token_id",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "supply",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the issuance of the token fails."
+            ],
+            "identifier": "issue_failure_event",
+            "inputs": [
+                {
+                    "name": "caller",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "message",
+                    "type": "bytes",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the initial supply is minted."
+            ],
+            "identifier": "mint_initial_supply_event",
+            "inputs": [
+                {
+                    "name": "caller",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "burned_tokens",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "tokens_left",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when reserves are added."
+            ],
+            "identifier": "reserves_added_event",
+            "inputs": [
+                {
+                    "name": "benefactor",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when reserves are reduced."
+            ],
+            "identifier": "reserves_reduced_event",
+            "inputs": [
+                {
+                    "name": "admin",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when staking rewards are claimed."
+            ],
+            "identifier": "staking_rewards_claimed_event",
+            "inputs": [
+                {
+                    "name": "staking_sc",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the close factor is updated."
+            ],
+            "identifier": "new_close_factor_event",
+            "inputs": [
+                {
+                    "name": "old_close_factor",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_close_factor",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the liquidation incentive is updated."
+            ],
+            "identifier": "new_liquidation_incentive_event",
+            "inputs": [
+                {
+                    "name": "new_liquidation_incentive",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "old_liquidation_incentive",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the protocol seize share is updated."
+            ],
+            "identifier": "new_protocol_seize_share_event",
+            "inputs": [
+                {
+                    "name": "old_protocol_seize_share",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "new_protocol_seize_share",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when underlying id is set."
+            ],
+            "identifier": "set_underlying_id_event",
+            "inputs": [
+                {
+                    "name": "underlying_id",
+                    "type": "EgldOrEsdtTokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when initial exchange rate is set."
+            ],
+            "identifier": "set_initial_exchange_rate_event",
+            "inputs": [
+                {
+                    "name": "initial_exchange_rate",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when accrual timestamp is updated."
+            ],
+            "identifier": "set_accrual_timestamp_event",
+            "inputs": [
+                {
+                    "name": "timestamp",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when accrual time threshold is updated."
+            ],
+            "identifier": "set_accrual_time_threshold_event",
+            "inputs": [
+                {
+                    "name": "old_accrual_time_threshold",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "new_accrual_time_threshold",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a trusted minter is added."
+            ],
+            "identifier": "add_trusted_minter_event",
+            "inputs": [
+                {
+                    "name": "minter",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a trusted minter is removed."
+            ],
+            "identifier": "remove_trusted_minter_event",
+            "inputs": [
+                {
+                    "name": "minter",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        }
+    ],
+    "hasCallback": true,
+    "types": {
+        "AccountSnapshot": {
+            "type": "struct",
+            "docs": [
+                "Represents a snapshot of an account's borrow balance."
+            ],
+            "fields": [
+                {
+                    "name": "borrow_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "borrow_index",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "EgldOrEsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "EsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "State": {
+            "type": "enum",
+            "docs": [
+                "The money market state."
+            ],
+            "variants": [
+                {
+                    "name": "Empty",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Active",
+                    "discriminant": 1
+                },
+                {
+                    "name": "Inactive",
+                    "discriminant": 2
+                }
+            ]
+        }
+    }
+}
